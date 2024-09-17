@@ -48,3 +48,42 @@ The Podcast Transcription and Translation Tool is designed to take a YouTube URL
 
 ## Conclusion
 This document outlines the requirements for the Podcast Transcription and Translation Tool, focusing on functionality, performance, and user experience. The goal is to create a reliable and efficient tool that meets the needs of users seeking accessible podcast content in Chinese.
+
+
+
+
+# Relevant Docs
+
+
+
+
+
+
+# Current File Structure
+
+
+PODBOOK
+├── .next
+├── app
+│   ├── fonts
+│   │   ├── GeistMonoVF.woff
+│   │   └── GeistVF.woff
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── lib
+│   └── utils.ts
+├── node_modules
+├── .eslintrc.json
+├── .gitignore
+├── components.json
+├── next-env.d.ts
+├── next.config.mjs
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── requirements.md
+├── tailwind.config.ts
+└── tsconfig.json
