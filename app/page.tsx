@@ -1,29 +1,37 @@
 'use client'
-import { useState } from 'react'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import axios from 'axios';
+import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-// Component for the main page
 export default function Home() {
-  const [url, setUrl] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState('')
+  const [url, setUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [audioUrl, setAudioUrl] = useState('');
+  const [error, setError] = useState('');
 
-  // Function to handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // TODO: Implement API call to backend for processing
-    // For now, we'll just simulate a delay
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    setResult('这里是翻译后的文本。这只是一个示例。')
-    setIsLoading(false)
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setAudioUrl('');
+
+    try {
+      const response = await axios.post('/api/transcribe-translate', { url });
+      const filename = response.data.audioUrl.split('/').pop();
+      setAudioUrl(`/api/audio/${filename}`);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Podcast Transcription and Translation Tool</h1>
+      <h1 className="text-3xl font-bold mb-6">YouTube Audio Extractor</h1>
       
       <Card>
         <CardHeader>
@@ -39,7 +47,7 @@ export default function Home() {
               required
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Processing...' : 'Transcribe & Translate'}
+              {isLoading ? 'Processing...' : 'Extract Audio'}
             </Button>
           </form>
         </CardContent>
@@ -48,24 +56,37 @@ export default function Home() {
       {isLoading && (
         <Card className="mt-4">
           <CardContent className="text-center py-4">
-            <p>Processing your request. This may take a few minutes...</p>
+            <p>Extracting audio. This may take a few minutes...</p>
           </CardContent>
         </Card>
       )}
 
-      {result && (
+      {audioUrl && (
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle>Result</CardTitle>
+            <CardTitle>Audio Player</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{result}</p>
+            <audio 
+              controls 
+              className="w-full"
+              onError={(e) => {
+                console.error('Audio playback error:', e);
+                setError('Failed to play audio. Please try again.');
+              }}
+            >
+              <source src={audioUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
           </CardContent>
-          <CardFooter>
-            <Button onClick={() => navigator.clipboard.writeText(result)} variant="outline">
-              Copy to Clipboard
-            </Button>
-          </CardFooter>
+        </Card>
+      )}
+
+      {error && (
+        <Card className="mt-4">
+          <CardContent className="text-center py-4 text-red-500">
+            <p>{error}</p>
+          </CardContent>
         </Card>
       )}
     </main>
